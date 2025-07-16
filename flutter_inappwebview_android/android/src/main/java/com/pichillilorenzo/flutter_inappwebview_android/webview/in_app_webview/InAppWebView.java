@@ -1566,13 +1566,13 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
 
     lastTouch = new Point((int) ev.getX(), (int) ev.getY());
 
-    ViewParent parent = getParent();
-    if (parent instanceof PullToRefreshLayout) {
-      PullToRefreshLayout pullToRefreshLayout = (PullToRefreshLayout) parent;
-      if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
-        pullToRefreshLayout.setEnabled(false);
-      }
-    }
+    // ViewParent parent = getParent();
+    // if (parent instanceof PullToRefreshLayout) {
+    //   PullToRefreshLayout pullToRefreshLayout = (PullToRefreshLayout) parent;
+    //   if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+    //     pullToRefreshLayout.setEnabled(false);
+    //   }
+    // }
 
     return super.onTouchEvent(ev);
   }
@@ -1584,15 +1584,15 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
     boolean overScrolledHorizontally = canScrollHorizontally() && clampedX;
     boolean overScrolledVertically = canScrollVertically() && clampedY;
 
-    ViewParent parent = getParent();
-    if (parent instanceof PullToRefreshLayout && overScrolledVertically && scrollY <= 10) {
-      PullToRefreshLayout pullToRefreshLayout = (PullToRefreshLayout) parent;
-      // change over scroll mode to OVER_SCROLL_NEVER in order to disable temporarily the glow effect
-      setOverScrollMode(OVER_SCROLL_NEVER);
-      pullToRefreshLayout.setEnabled(pullToRefreshLayout.settings.enabled);
-      // reset over scroll mode
-      setOverScrollMode(customSettings.overScrollMode);
-    }
+    // ViewParent parent = getParent();
+    // if (parent instanceof PullToRefreshLayout && overScrolledVertically && scrollY <= 10) {
+    //   PullToRefreshLayout pullToRefreshLayout = (PullToRefreshLayout) parent;
+    //   // change over scroll mode to OVER_SCROLL_NEVER in order to disable temporarily the glow effect
+    //   setOverScrollMode(OVER_SCROLL_NEVER);
+    //   pullToRefreshLayout.setEnabled(pullToRefreshLayout.settings.enabled);
+    //   // reset over scroll mode
+    //   setOverScrollMode(customSettings.overScrollMode);
+    // }
 
     if (overScrolledHorizontally || overScrolledVertically) {
       if (channelDelegate != null)
