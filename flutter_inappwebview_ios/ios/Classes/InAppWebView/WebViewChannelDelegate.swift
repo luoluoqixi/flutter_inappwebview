@@ -707,6 +707,11 @@ public class WebViewChannelDelegate: ChannelDelegate {
                 result(false)
             }
             break
+        case .disableAutoScrollWhenKeyboardShows:
+            let disable = arguments!["disable"] as! Bool
+            ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows = disable
+            result(true)
+            break
         }
     }
     

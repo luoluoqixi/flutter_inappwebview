@@ -1474,9 +1474,9 @@ class IOSInAppWebViewController extends PlatformInAppWebViewController
                         _controllerFromPlatform, request))
                     ?.toNativeValue());
               else
-                return jsonEncode((await _inAppBrowserEventHandler!
-                        .onAjaxProgress(request))
-                    ?.toNativeValue());
+                return jsonEncode(
+                    (await _inAppBrowserEventHandler!.onAjaxProgress(request))
+                        ?.toNativeValue());
             }
             return null;
           case "shouldInterceptFetchRequest":
@@ -2769,6 +2769,14 @@ class IOSInAppWebViewController extends PlatformInAppWebViewController
     return await _staticChannel.invokeMethod<String>(
             'getJavaScriptBridgeName', args) ??
         '';
+  }
+
+  @override
+  Future<bool> disableAutoScrollWhenKeyboardShows(bool disable) async {
+    Map<String, dynamic> args = <String, dynamic>{};
+    args.putIfAbsent("disable", () => disable);
+    return await channel?.invokeMethod(
+        'disableAutoScrollWhenKeyboardShows', args);
   }
 
   @override

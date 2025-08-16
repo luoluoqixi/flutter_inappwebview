@@ -9,6 +9,35 @@ import Flutter
 import Foundation
 @preconcurrency import WebKit
 
+class ScrollViewCustomDelegateHandler: NSObject, UIScrollViewDelegate {
+    public static var disableAutoScrollWhenKeyboardShows = false
+    public var oldOffset: CGPoint = .zero
+    private var isFromJavascript = false
+    private weak var scrollView: UIScrollView?
+
+    init(scrollView: UIScrollView) {
+        self.scrollView = scrollView
+        super.init()
+    }
+
+    func setContentOffsetFromJS(_ offset: CGPoint) {
+        isFromJavascript = true
+        scrollView?.contentOffset = offset
+        isFromJavascript = false
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if isFromJavascript {
+            oldOffset = scrollView.contentOffset
+            return
+        }
+        if (!ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows) {
+            return
+        }
+        scrollView.contentOffset = oldOffset
+    }
+}
+
 public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
                             WKNavigationDelegate, WKScriptMessageHandler, UIGestureRecognizerDelegate,
                             WKDownloadDelegate,
@@ -71,7 +100,11 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
     
     private var exceptedBridgeSecret = NSUUID().uuidString
     private var javaScriptBridgeEnabled = true
-    
+
+    private lazy var scrollCustomDelegate: ScrollViewCustomDelegateHandler = {
+        return ScrollViewCustomDelegateHandler(scrollView: self.scrollView)
+    }()
+
     init(id: Any?, plugin: SwiftFlutterPlugin?, frame: CGRect, configuration: WKWebViewConfiguration,
          contextMenu: [String: Any]?, userScripts: [UserScript] = []) {
         super.init(frame: frame, configuration: configuration)
@@ -142,6 +175,21 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
     }
     @objc func keyboardWillHide(notification: NSNotification) {
         _scrollViewContentInsetAdjusted = false
+    }
+
+    @objc func keyboardWillShowCustom(notification: NSNotification) {
+        if ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows {
+            scrollView.delegate = scrollCustomDelegate
+            scrollCustomDelegate.oldOffset = scrollView.contentOffset
+            print("keyboardWillShowCustom")
+        }
+    }
+
+    @objc func keyboardDidShowCustom(notification: NSNotification) {
+        if ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows {
+            scrollView.delegate = self
+            print("keyboardDidShowCustom")
+        }
     }
     
     required public init(coder aDecoder: NSCoder) {
@@ -382,6 +430,12 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
                                                    name: UIResponder.keyboardWillHideNotification,
                                                    object: nil)
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShowCustom(notification:)),
+                                                name: UIResponder.keyboardWillShowNotification,
+                                                object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShowCustom(notification:)),
+                                                name: UIResponder.keyboardDidShowNotification,
+                                                object: nil)
         
         scrollView.addGestureRecognizer(self.longPressRecognizer)
         scrollView.addGestureRecognizer(self.recognizerForDisablingContextMenuOnLinks)
@@ -3085,6 +3139,15 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
                                 webMessageListener.channelDelegate?.onPostMessage(message: webMessage, sourceOrigin: sourceOrigin, isMainFrame: isMainFrame)
                             }
                         }
+                    }
+                    break
+                case "setContentOffsetFromJS":
+                    if let args = body["args"] as? String, let data = args.data(using: .utf8) {
+                        let jsonArgs = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: Any]]
+                        if let jsonData = jsonArgs?.first,
+                           let scrollTop = jsonData["scrollTop"] as? Float {
+                            scrollCustomDelegate.setContentOffsetFromJS(CGPoint(x: CGFloat(0), y: CGFloat(scrollTop)))
+                           }
                     }
                     break
                 default:

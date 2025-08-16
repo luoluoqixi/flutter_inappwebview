@@ -2624,6 +2624,11 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
         'setSafeBrowsingWhitelist is not implemented on the current platform');
   }
 
+  Future<bool> disableAutoScrollWhenKeyboardShows(bool enabled) {
+    throw UnimplementedError(
+        'disableAutoScrollWhenKeyboardShows is not implemented on the current platform');
+  }
+
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.dispose}
   ///Disposes the controller.
   ///{@endtemplate}

@@ -612,6 +612,10 @@ class InAppWebViewController {
   ///{@macro flutter_inappwebview_platform_interface.PlatformInAppWebViewController.getViewId}
   dynamic getViewId() => platform.getViewId();
 
+  ///{@macro flutter_inappwebview_platform_interface.PlatformInAppWebViewController.disableAutoScrollWhenKeyboardShows}
+  Future<bool> disableAutoScrollWhenKeyboardShows(bool enabled) =>
+      platform.disableAutoScrollWhenKeyboardShows(enabled);
+
   ///{@macro flutter_inappwebview_platform_interface.PlatformInAppWebViewController.dispose}
   void dispose({bool isKeepAlive = false}) =>
       platform.dispose(isKeepAlive: isKeepAlive);

@@ -95,4 +95,5 @@ public enum WebViewChannelDelegateMethods: String {
     case hideInputMethod = "hideInputMethod"
     case saveState = "saveState"
     case restoreState = "restoreState"
+    case disableAutoScrollWhenKeyboardShows = "disableAutoScrollWhenKeyboardShows"
 }
