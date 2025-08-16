@@ -181,14 +181,14 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
         if ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows {
             scrollView.delegate = scrollCustomDelegate
             scrollCustomDelegate.oldOffset = scrollView.contentOffset
-            print("keyboardWillShowCustom")
+            // print("keyboardWillShowCustom")
         }
     }
 
     @objc func keyboardDidShowCustom(notification: NSNotification) {
         if ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows {
             scrollView.delegate = self
-            print("keyboardDidShowCustom")
+            // print("keyboardDidShowCustom")
         }
     }
     
