@@ -11,6 +11,7 @@ import Foundation
 
 class ScrollViewCustomDelegateHandler: NSObject, UIScrollViewDelegate {
     public static var disableAutoScrollWhenKeyboardShows = false
+    public var enable = false
     public var oldOffset: CGPoint = .zero
     private var isFromJavascript = false
     private weak var scrollView: UIScrollView?
@@ -27,11 +28,12 @@ class ScrollViewCustomDelegateHandler: NSObject, UIScrollViewDelegate {
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard enable else { return }
         if isFromJavascript {
             oldOffset = scrollView.contentOffset
             return
         }
-        if (!ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows) {
+        guard ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows else {
             return
         }
         scrollView.contentOffset = oldOffset
@@ -105,6 +107,8 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
         return ScrollViewCustomDelegateHandler(scrollView: self.scrollView)
     }()
 
+    private var keyboardSettleTimer: Timer?
+
     init(id: Any?, plugin: SwiftFlutterPlugin?, frame: CGRect, configuration: WKWebViewConfiguration,
          contextMenu: [String: Any]?, userScripts: [UserScript] = []) {
         super.init(frame: frame, configuration: configuration)
@@ -175,20 +179,32 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
     }
     @objc func keyboardWillHide(notification: NSNotification) {
         _scrollViewContentInsetAdjusted = false
-    }
 
-    @objc func keyboardWillShowCustom(notification: NSNotification) {
         if ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows {
-            scrollView.delegate = scrollCustomDelegate
-            scrollCustomDelegate.oldOffset = scrollView.contentOffset
-            // print("keyboardWillShowCustom")
+            self.scrollView.delegate = self
+            self.scrollCustomDelegate.enable = false
         }
     }
 
+    @objc func keyboardWillShowCustom(notification: NSNotification) {
+        guard ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows else {
+            return
+        }
+        scrollView.delegate = scrollCustomDelegate
+        scrollCustomDelegate.oldOffset = scrollView.contentOffset
+        scrollCustomDelegate.enable = true
+        // print("keyboardWillShowCustom")
+    }
+
     @objc func keyboardDidShowCustom(notification: NSNotification) {
-        if ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows {
-            scrollView.delegate = self
-            // print("keyboardDidShowCustom")
+        guard ScrollViewCustomDelegateHandler.disableAutoScrollWhenKeyboardShows else {
+            return
+        }
+        keyboardSettleTimer?.invalidate()
+        keyboardSettleTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            self.scrollView.delegate = self
+            self.scrollCustomDelegate.enable = false
         }
     }
     
