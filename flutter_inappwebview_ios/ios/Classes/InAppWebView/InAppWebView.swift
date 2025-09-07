@@ -437,7 +437,8 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
     }
 
     public func prepare() {
-        if #available(iOS 17.2, *) {
+        // 16.4+ or 16.0 ?
+        if #available(iOS 16.4, *) {
             // Fix https://github.com/pichillilorenzo/flutter_inappwebview/issues/1947
             NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)),
                                                    name: UIResponder.keyboardWillShowNotification,
