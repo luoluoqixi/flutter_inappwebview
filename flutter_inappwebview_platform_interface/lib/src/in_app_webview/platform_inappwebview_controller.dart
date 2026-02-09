@@ -4723,6 +4723,21 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
     platform: platform,
   );
 
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.disableAutoScrollWhenKeyboardShows}
+  ///disableAutoScrollWhenKeyboardShows
+  ///{@endtemplate}
+  ///
+  ///{@macro flutter_inappwebview_platform_interface.PlatformInAppWebViewController.disableAutoScrollWhenKeyboardShows.supported_platforms}
+  @SupportedPlatforms(
+    platforms: [
+      IOSPlatform(),
+    ],
+  )
+  Future<bool> disableAutoScrollWhenKeyboardShows(bool enabled) {
+    throw UnimplementedError(
+        'disableAutoScrollWhenKeyboardShows is not implemented on the current platform');
+  }
+
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.dispose}
   ///Disposes the controller.
   ///{@endtemplate}
@@ -4737,12 +4752,6 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
       WindowsPlatform(),
     ],
   )
-
-  Future<bool> disableAutoScrollWhenKeyboardShows(bool enabled) {
-    throw UnimplementedError(
-        'disableAutoScrollWhenKeyboardShows is not implemented on the current platform');
-  }
-
   void dispose({bool isKeepAlive = false}) {
     throw UnimplementedError(
       '${PlatformInAppWebViewControllerMethod.dispose.name} is not implemented on the current platform',

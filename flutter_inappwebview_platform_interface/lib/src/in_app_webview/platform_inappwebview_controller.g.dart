@@ -513,6 +513,20 @@ enum PlatformInAppWebViewControllerMethod {
   ///{@endtemplate}
   createWebMessageChannel,
 
+  ///Can be used to check if the [PlatformInAppWebViewController.disableAutoScrollWhenKeyboardShows] method is supported at runtime.
+  ///
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.disableAutoScrollWhenKeyboardShows.supported_platforms}
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- iOS WKWebView
+  ///
+  ///**Parameters - Officially Supported Platforms/Implementations**:
+  ///- [enabled]: all platforms
+  ///
+  ///Use the [PlatformInAppWebViewController.isMethodSupported] method to check if this method is supported at runtime.
+  ///{@endtemplate}
+  disableAutoScrollWhenKeyboardShows,
+
   ///Can be used to check if the [PlatformInAppWebViewController.disableWebView] method is supported at runtime.
   ///
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.disableWebView.supported_platforms}
@@ -2743,6 +2757,10 @@ extension _PlatformInAppWebViewControllerMethodSupported
               TargetPlatform.linux,
               TargetPlatform.windows,
             ].contains(platform ?? defaultTargetPlatform);
+      case PlatformInAppWebViewControllerMethod
+          .disableAutoScrollWhenKeyboardShows:
+        return ((kIsWeb && platform != null) || !kIsWeb) &&
+            [TargetPlatform.iOS].contains(platform ?? defaultTargetPlatform);
       case PlatformInAppWebViewControllerMethod.disableWebView:
         return ((kIsWeb && platform != null) || !kIsWeb) &&
             [

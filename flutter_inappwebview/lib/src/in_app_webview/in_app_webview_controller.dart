@@ -1046,6 +1046,8 @@ class InAppWebViewController {
   dynamic getViewId() => platform.getViewId();
 
   ///{@macro flutter_inappwebview_platform_interface.PlatformInAppWebViewController.disableAutoScrollWhenKeyboardShows}
+  ///
+  ///{@macro flutter_inappwebview_platform_interface.PlatformInAppWebViewController.disableAutoScrollWhenKeyboardShows.supported_platforms}
   Future<bool> disableAutoScrollWhenKeyboardShows(bool enabled) =>
       platform.disableAutoScrollWhenKeyboardShows(enabled);
 
